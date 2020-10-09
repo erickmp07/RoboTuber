@@ -2,7 +2,7 @@ const algorithmia = require('algorithmia')
 const sentenceBoundaryDetection = require('sbd')
 
 const algorithmiaApiKey = require('../credentials/algorithmia.json').apiKey
-const watsonApiKey = require('../credentials/watson-nlu.json').apiKey
+const watsonApiKey = require('../credentials/watson-nlu.json').apikey
 
 const NaturalLanguageUnderstandingV1 = require('ibm-watson/natural-language-understanding/v1')
 const { IamAuthenticator } = require('ibm-watson/auth')
@@ -18,6 +18,7 @@ async function robot(content) {
     sanitizeContent(content)
     breakContentIntoSentences(content)
     limitMaximumSentences(content)
+    await fetchKeywordsOfAllSentences(content)
 
     async function featchContentFromWikipedia(content) {
         const algorithmiaAuthenticated = algorithmia.client(algorithmiaApiKey)
@@ -72,6 +73,12 @@ async function robot(content) {
         content.sentences = content.sentences.slice(0, content.maximumSentences)
     }
 
+    async function fetchKeywordsOfAllSentences(content) {
+        for (const sentence of content.sentences) {
+            sentence.keywords = await fetchWatsonAndReturnKeywords(sentence.text)
+        }
+    }
+
     async function fetchWatsonAndReturnKeywords(sentence) {
         return new Promise((resolve, reject) => {
             nlu.analyze({
@@ -83,8 +90,8 @@ async function robot(content) {
                 if (error) {
                     throw error
                 }
-    
-                const keywords = response.keywords.map(keyword => {
+
+                const keywords = response.result.keywords.map(keyword => {
                     return keyword.text
                 })
     
