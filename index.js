@@ -1,5 +1,6 @@
 const robots = {
     input: require('./robots/input.js'),
+    state: require('./robots/state.js'),
     text: require('./robots/text.js')
 }
 
@@ -8,7 +9,9 @@ async function start() {
 
     await robots.text()
 
-    console.log(JSON.stringify(content, null, 4))
+    const content = robots.state.load()
+
+    console.dir(content, { depth: null })
 }
 
 start()
