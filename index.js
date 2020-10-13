@@ -6,7 +6,7 @@ const robots = {
 async function start() {
     robots.input();
 
-    await robots.text(content)
+    await robots.text()
 
     console.log(JSON.stringify(content, null, 4))
 }
