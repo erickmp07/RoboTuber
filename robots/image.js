@@ -12,7 +12,8 @@ async function robot() {
 
     //await fetchImagesOfAllSentences(content)
     //await downloadAllImages(content)
-    await convertAllImages(content)
+    //await convertAllImages(content)
+    await createAllSentenceImages(content)
 
     //state.save(content)
 
@@ -115,6 +116,65 @@ async function robot() {
                     }
 
                     console.log(`> Image converted: ${outputFile}`)
+                    resolve()
+                })
+        })
+    }
+
+    async function createAllSentenceImages(content) {
+        for (let sentenceIndex = 0; sentenceIndex < content.sentences.length; sentenceIndex++) {
+            await createSentenceImage(sentenceIndex, content.sentences[sentenceIndex].text)
+        }
+    }
+
+    async function createSentenceImage(sentenceIndex, sentenceText) {
+        return new Promise((resolve, reject) => {
+            const outputFile = `./content/${sentenceIndex}-sentence.png`
+
+            const templateSettings = {
+                0: {
+                    size: '1920x400',
+                    gravity: 'center'
+                },
+                1: {
+                    size: '1920x1080',
+                    gravity: 'center'
+                },
+                2: {
+                    size: '800x1080',
+                    gravity: 'west'
+                },
+                3: {
+                    size: '1920x400',
+                    gravity: 'center'
+                },
+                4: {
+                    size: '1920x1080',
+                    gravity: 'center'
+                },
+                5: {
+                    size: '800x1080',
+                    gravity: 'west'
+                },
+                6: {
+                    size: '1920x400',
+                    gravity: 'center'
+                }
+            }
+
+            gm()
+                .out('-size', templateSettings[sentenceIndex].size)
+                .out('-gravity', templateSettings[sentenceIndex].gravity)
+                .out('-background', 'transparent')
+                .out('-fill', 'white')
+                .out('-kerning', '-1')
+                .out(`caption: ${sentenceText}`)
+                .write(outputFile, error => {
+                    if (error) {
+                        return reject(error)
+                    }
+
+                    console.log(`> Sentence created: ${outputFile}`)
                     resolve()
                 })
         })
