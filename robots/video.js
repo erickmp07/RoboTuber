@@ -5,11 +5,12 @@ const state = require("./state")
 async function robot() {
     const content = state.load()
 
-    await convertAllImages(content)
-    await createAllSentenceImages(content)
-    await createYouTubeThumbnail()
+    //await convertAllImages(content)
+    //await createAllSentenceImages(content)
+    //await createYouTubeThumbnail()
+    await createVideoRenderScript(content)
 
-    state.save(content)
+    //state.save(content)
 
     async function convertAllImages(content) {
         for (let sentenceIndex = 0; sentenceIndex < content.sentences.length; sentenceIndex++) {
@@ -128,6 +129,10 @@ async function robot() {
                     resolve()
                 })
         })
+    }
+
+    async function createVideoRenderScript(content) {
+        await state.saveScript(content)
     }
 }
 
