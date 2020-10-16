@@ -18,6 +18,7 @@
   "homepage": "https://github.com/erickmp07/RoboTuber#readme",
   "dependencies": {
     "@ffmpeg-installer/ffmpeg": "^1.0.20",
+    "@ffprobe-installer/ffprobe": "^1.1.0",
     "algorithmia": "^0.3.10",
     "gm": "^1.23.1",
     "googleapis": "^61.0.0",
