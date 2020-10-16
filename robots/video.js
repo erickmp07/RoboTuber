@@ -1,16 +1,28 @@
 const gm = require('gm').subClass({ imageMagick: true })
+const videoshow = require('videoshow')
+const path = require('path')
+const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path
+const ffprobePath = require('@ffprobe-installer/ffprobe').path
 
 const state = require("./state")
+
+const audio = path.join(__dirname, '../templates/1/newsroom.mp3')
+const video = path.join(__dirname, '../content/video-maker.mp4')
+
+let ffmpeg = require('fluent-ffmpeg')
+ffmpeg.setFfmpegPath(ffmpegPath)
+ffmpeg.setFfprobePath(ffprobePath)
 
 async function robot() {
     const content = state.load()
 
-    //await convertAllImages(content)
-    //await createAllSentenceImages(content)
-    //await createYouTubeThumbnail()
+    await convertAllImages(content)
+    await createAllSentenceImages(content)
+    await createYouTubeThumbnail()
     await createVideoRenderScript(content)
+    await renderVideo()
 
-    //state.save(content)
+    state.save(content)
 
     async function convertAllImages(content) {
         for (let sentenceIndex = 0; sentenceIndex < content.sentences.length; sentenceIndex++) {
@@ -133,6 +145,73 @@ async function robot() {
 
     async function createVideoRenderScript(content) {
         await state.saveScript(content)
+    }
+
+    async function renderVideo() {
+        console.log('> Starting video render')
+
+        return new Promise((resolve, reject) => {
+            let images = []
+
+            for (let sentenceIndex = 0; sentenceIndex < content.sentences.length; sentenceIndex++) {
+                images.push({
+                    path: `./content/${sentenceIndex}-converted.png`,
+                    caption: content.sentences[sentenceIndex].text
+                })
+            }
+
+            const audioParameters = {
+                fade: true,
+                delay: 1
+            }
+
+            const videoOptions = {
+                fps: 30,
+                loop: 10,
+                transition: true,
+                transitionDuration: 1,
+                videoBitrate: 1024,
+                videoCodec: 'libx264',
+                size: '640x?',
+                audioBitrate: '128k',
+                audioChannels: 2,
+                format: 'mp4',
+                pixelFormat: 'yuv420p',
+                useSubRipSubtitles: false,
+                subtitleStyle: {
+                    Fontename: 'Arial',
+                    Fontesize: '30',
+                    PrimaryColour: '11861244',
+                    SecondaryColour: '11861244',
+                    TertiaryColour: '11861244',
+                    BackColour: '-2147483640',
+                    Bold: '2',
+                    Italic: '0',
+                    BorderStyle: '2',
+                    Outline: '2',
+                    Shadow: '1',
+                    Alignment: '1',
+                    MarginL: '40',
+                    MarginR: '60',
+                    MarginV: '40'
+                }
+            }
+
+            videoshow(images, videoOptions)
+                .audio(audio, audioParameters)
+                .save(video)
+                .on('start', command => {
+                    console.log('> FFmpeg still working in: ', command, 'Please wait...')
+                })
+                .on('error', (error, stdout, stderr) => {
+                    console.error('> Error: ', error)
+                    console.error('> Ffmpeg stderr: ', stderr)
+                })
+                .on('end', output => {
+                    resolve()
+                    console.log('> Finished processing. Video created: ', output)
+                })
+        })
     }
 }
 
