@@ -1,6 +1,9 @@
 const express = require('express')
+const google = require('googleapis').google
 
 const state = require('./state.js')
+
+const OAuth2 = google.auth.OAuth2
 
 async function robot() {
     const content = state.load()
@@ -11,7 +14,7 @@ async function robot() {
 
     async function authenticateWithOAuth() {
         const webServer = await startWebServer()
-        //await createOAuthClient()
+        const OAuthClient = await createOAuthClient()
         //await requestUserConsent()
         //await waitForGoogleCallback()
         //await requestGoogleForAccessTokens()
@@ -32,6 +35,18 @@ async function robot() {
                     })
                 })
             })
+        }
+
+        async function createOAuthClient() {
+            const credentials = require('../credentials/google-youtube.json')
+
+            const OAuthClient = new OAuth2(
+                credentials.web.client_id,
+                credentials.web.client_secret,
+                credentials.web.redirect_uris[0]
+            )
+
+            return OAuthClient
         }
     }
 }
