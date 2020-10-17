@@ -138,7 +138,7 @@ async function robot() {
         return youtubeResponse.data
 
         function onUploadProgress(event) {
-            const progress = Math.round((event.bytedRead / videoFileSize) * 100)
+            const progress = Math.round((event.bytesRead / videoFileSize) * 100)
 
             console.log(`> ${progress}% completed`)
         }
@@ -146,7 +146,7 @@ async function robot() {
 
     async function uploadThumbnail(videoInformation) {
         const videoId = videoInformation.id
-        const videoThumbnailFilePath = './content/youtube-thumbnail.png'
+        const videoThumbnailFilePath = './content/youtube-thumbnail.jpg'
 
         const requestParameters = {
             videoId: videoId,
