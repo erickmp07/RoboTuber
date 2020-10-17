@@ -16,7 +16,7 @@ async function robot() {
         const webServer = await startWebServer()
         const OAuthClient = await createOAuthClient()
         requestUserConsent(OAuthClient)
-        //await waitForGoogleCallback()
+        const authorizationToken = await waitForGoogleCallback(webServer)
         //await requestGoogleForAccessTokens()
         //await setGlobalGoogleAuthentication()
         //await stopWebServer()
@@ -56,6 +56,21 @@ async function robot() {
             })
 
             console.log(`> Please give your consent: ${consentUrl}`)
+        }
+
+        async function waitForGoogleCallback(webServer) {
+            return new Promise((resolve, reject) => {
+                console.log('> Waiting for user consent...')
+
+                webServer.app.get('/oauth2callback', (request, res) => {
+                    const authCode = request.query.code
+
+                    console.log(`> Consent given: ${authCode}`)
+
+                    res.send('<h1>Thank you!</h1><p>Now close this tab.</p>')
+                    resolve(authCode)
+                })
+            })
         }
     }
 }
