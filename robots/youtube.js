@@ -18,7 +18,7 @@ async function robot() {
         requestUserConsent(OAuthClient)
         const authorizationToken = await waitForGoogleCallback(webServer)
         await requestGoogleForAccessTokens(OAuthClient, authorizationToken)
-        //await setGlobalGoogleAuthentication()
+        await setGlobalGoogleAuthentication(OAuthClient)
         //await stopWebServer()
 
         async function startWebServer() {
@@ -83,6 +83,12 @@ async function robot() {
                     OAuthClient.setCredentials(tokens)
                     resolve()
                 })
+            })
+        }
+
+        async function setGlobalGoogleAuthentication(OAuthClient) {
+            google.options({
+                auth: OAuthClient
             })
         }
     }
