@@ -1,15 +1,17 @@
 const express = require('express')
+const fs = require('fs')
 const google = require('googleapis').google
 
 const state = require('./state.js')
 
 const OAuth2 = google.auth.OAuth2
+const youtube = google.youtube({ version: 'v3' })
 
 async function robot() {
     const content = state.load()
 
     await authenticateWithOAuth()
-    //await uploadVideo()
+    const videoInformation = await uploadVideo(content)
     //await uploadThumbnail()
 
     async function authenticateWithOAuth() {
@@ -98,6 +100,47 @@ async function robot() {
                     resolve()
                 })
             })
+        }
+    }
+
+    async function uploadVideo(content) {
+        const videoFilePath = './content/video-maker.mp4'
+        const videoFileSize = fs.statSync(videoFilePath).size
+        const videoTitle = `${content.prefix} ${content.searchTerm}`
+        const videoTags = [content.searchTerm, ...content.sentences[0].keywords]
+        const videoDescription = content.sentences.map(sentence => {
+            return sentence.text
+        }).join('\n\n')
+
+        const requestParameters = {
+            part: 'snippet, status',
+            requestBody: {
+                snippet: {
+                    title: videoTitle,
+                    description: videoDescription,
+                    tags: videoTags
+                },
+                status: {
+                    privacyStatus: 'unlisted'
+                }
+            },
+            media: {
+                body: fs.createReadStream(videoFilePath)
+            }
+        }
+
+        const youtubeResponse = await youtube.videos.insert(requestParameters, {
+            onUploadProgress: onUploadProgress
+        })
+
+        console.log(`> Video available at: https://youtu.be/${youtubeResponse.data.id}`)
+
+        return youtubeResponse.data
+
+        function onUploadProgress(event) {
+            const progress = Math.round((event.bytedRead / videoFileSize) * 100)
+
+            console.log(`> ${progress}% completed`)
         }
     }
 }
