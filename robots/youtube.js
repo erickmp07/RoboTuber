@@ -17,7 +17,7 @@ async function robot() {
         const OAuthClient = await createOAuthClient()
         requestUserConsent(OAuthClient)
         const authorizationToken = await waitForGoogleCallback(webServer)
-        //await requestGoogleForAccessTokens()
+        await requestGoogleForAccessTokens(OAuthClient, authorizationToken)
         //await setGlobalGoogleAuthentication()
         //await stopWebServer()
 
@@ -69,6 +69,19 @@ async function robot() {
 
                     res.send('<h1>Thank you!</h1><p>Now close this tab.</p>')
                     resolve(authCode)
+                })
+            })
+        }
+
+        async function requestGoogleForAccessTokens(OAuthClient, authorizationToken) {
+            return new Promise((resolve, reject) => {
+                OAuthClient.getToken(authorizationToken, (error, tokens) => {
+                    if (error) {
+                        return reject(error)
+                    }
+
+                    OAuthClient.setCredentials(tokens)
+                    resolve()
                 })
             })
         }
