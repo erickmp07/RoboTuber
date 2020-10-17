@@ -12,7 +12,7 @@ async function robot() {
 
     await authenticateWithOAuth()
     const videoInformation = await uploadVideo(content)
-    //await uploadThumbnail()
+    await uploadThumbnail(videoInformation)
 
     async function authenticateWithOAuth() {
         const webServer = await startWebServer()
@@ -142,6 +142,23 @@ async function robot() {
 
             console.log(`> ${progress}% completed`)
         }
+    }
+
+    async function uploadThumbnail(videoInformation) {
+        const videoId = videoInformation.id
+        const videoThumbnailFilePath = './content/youtube-thumbnail.png'
+
+        const requestParameters = {
+            videoId: videoId,
+            media: {
+                mimeType: 'image/jpeg',
+                body: fs.createReadStream(videoThumbnailFilePath)
+            }
+        }
+
+        const youtubeResponse = await youtube.thumbnails.set(requestParameters)
+
+        console.log('> Thumbnail uploaded!')
     }
 }
 
