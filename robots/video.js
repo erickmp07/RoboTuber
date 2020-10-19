@@ -15,6 +15,7 @@ ffmpeg.setFfprobePath(ffprobePath)
 
 async function robot() {
     console.log('> [video-robot] Starting...')
+    
     const content = state.load()
 
     await convertAllImages(content)
