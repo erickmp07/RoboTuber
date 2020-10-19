@@ -14,6 +14,8 @@ ffmpeg.setFfmpegPath(ffmpegPath)
 ffmpeg.setFfprobePath(ffprobePath)
 
 async function robot() {
+    console.log('> [video-robot] Starting...')
+    
     const content = state.load()
 
     await convertAllImages(content)
@@ -63,7 +65,7 @@ async function robot() {
                         return reject(error)
                     }
 
-                    console.log(`> Image converted: ${outputFile}`)
+                    console.log(`> [video-robot] Image converted: ${outputFile}`)
                     resolve()
                 })
         })
@@ -122,7 +124,7 @@ async function robot() {
                         return reject(error)
                     }
 
-                    console.log(`> Sentence created: ${outputFile}`)
+                    console.log(`> [video-robot] Sentence created: ${outputFile}`)
                     resolve()
                 })
         })
@@ -137,7 +139,7 @@ async function robot() {
                         return reject(error)
                     }
 
-                    console.log('> Creating YouTube thumbnail')
+                    console.log('> [video-robot] YouTube thumbnail created')
                     resolve()
                 })
         })
@@ -148,7 +150,7 @@ async function robot() {
     }
 
     async function renderVideo() {
-        console.log('> Starting video render')
+        console.log('> [video-robot] Starting video render')
 
         return new Promise((resolve, reject) => {
             let images = []
@@ -201,15 +203,15 @@ async function robot() {
                 .audio(audio, audioParameters)
                 .save(video)
                 .on('start', command => {
-                    console.log('> FFmpeg still working in: ', command, 'Please wait...')
+                    console.log('> [video-robot] FFmpeg still working in: ', command, 'Please wait...')
                 })
                 .on('error', (error, stdout, stderr) => {
-                    console.error('> Error: ', error)
-                    console.error('> Ffmpeg stderr: ', stderr)
+                    console.error('> [video-robot] Error: ', error)
+                    console.error('> [video-robot] Ffmpeg stderr: ', stderr)
                 })
                 .on('end', output => {
                     resolve()
-                    console.log('> Finished processing. Video created: ', output)
+                    console.log('> [video-robot] Finished processing. Video created: ', output)
                 })
         })
     }
