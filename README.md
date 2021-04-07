@@ -72,6 +72,9 @@ npm install
 node index
 ```
 
+<br>
+<br>
+
 NOTE 1: During the YouTube robot execution, you should give your consent to authenticate your user and the robot can upload the video to your account.
 
 <p align="center">
