@@ -72,10 +72,6 @@ npm install
 node index
 ```
 
-- A video like that should be created
-
-![RoboTuber](/public/video-maker.mp4)
-
 NOTE 1: During the YouTube robot execution, you should give your consent to authenticate your user and the robot can upload the video to your account.
 
 <p align="center">
