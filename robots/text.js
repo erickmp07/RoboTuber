@@ -19,7 +19,7 @@ async function robot() {
 
     const content = state.load();
 
-    await featchContentFromWikipedia(content);
+    await fetchContentFromWikipedia(content);
     sanitizeContent(content);
     breakContentIntoSentences(content);
     limitMaximumSentences(content);
@@ -27,7 +27,7 @@ async function robot() {
 
     state.save(content);
 
-    async function featchContentFromWikipedia(content) {
+    async function fetchContentFromWikipedia(content) {
         console.log('> [text-robot] Fetching content from Wikipedia');
 
         const algorithmiaAuthenticated = algorithmia.client(algorithmiaApiKey);
