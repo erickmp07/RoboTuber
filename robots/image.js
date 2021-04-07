@@ -1,36 +1,36 @@
 const google = require('googleapis').google
-const imageDownloader = require('image-downloader')
+const imageDownloader = require('image-downloader');
 
-const state = require('./state.js')
-const googleSearchCredentials = require('../credentials/google-search.json')
+const state = require('./state.js');
+const googleSearchCredentials = require('../credentials/google-search.json');
 
-const customSearch = google.customsearch('v1')
+const customSearch = google.customsearch('v1');
 
 async function robot() {
-    console.log('> [image-robot] Starting...')
+    console.log('> [image-robot] Starting...');
 
-    const content = state.load()
+    const content = state.load();
 
-    await fetchImagesOfAllSentences(content)
-    await downloadAllImages(content)
+    await fetchImagesOfAllSentences(content);
+    await downloadAllImages(content);
     
-    state.save(content)
+    state.save(content);
 
     async function fetchImagesOfAllSentences(content) {
         for (let sentenceIndex = 0; sentenceIndex < content.sentences.length; sentenceIndex++) {
-            let query
+            let query;
 
             if (sentenceIndex == 0) {
-                query = `${content.searchTerm}`
+                query = `${content.searchTerm}`;
             }
             else {
-                query = `${content.searchTerm} ${content.sentences[sentenceIndex].keywords[0]}`
+                query = `${content.searchTerm} ${content.sentences[sentenceIndex].keywords[0]}`;
             }
 
-            console.log(`> [image-robot] Querying Google Images with: "${query}"`)
+            console.log(`> [image-robot] Querying Google Images with: "${query}"`);
 
-            content.sentences[sentenceIndex].images = await fetchGoogleAndReturnImagesLinks(query)
-            content.sentences[sentenceIndex].googleSearchQuery = query
+            content.sentences[sentenceIndex].images = await fetchGoogleAndReturnImagesLinks(query);
+            content.sentences[sentenceIndex].googleSearchQuery = query;
         }
     }
 
@@ -41,37 +41,37 @@ async function robot() {
             q: query,
             searchType: 'image',
             num: 2
-        })
+        });
 
         const imagesUrl = response.data.items.map(item => {
-            return item.link
-        })
+            return item.link;
+        });
 
-        return imagesUrl
+        return imagesUrl;
     }
 
     async function downloadAllImages(content) {
-        content.downloadedImages = []
+        content.downloadedImages = [];
 
         for (let sentenceIndex = 0; sentenceIndex < content.sentences.length; sentenceIndex++) {
-            const images = content.sentences[sentenceIndex].images
+            const images = content.sentences[sentenceIndex].images;
 
             for (let imageIndex = 0; imageIndex < images.length; imageIndex++) {
-                const imageUrl = images[imageIndex]
+                const imageUrl = images[imageIndex];
 
                 try {
                     if (content.downloadedImages.includes(imageUrl)) {
-                        throw new Error('Image already downloaded')
+                        throw new Error('Image already downloaded');
                     }
 
-                    await downloadAndSave(imageUrl, `${sentenceIndex}-original.png`)
+                    await downloadAndSave(imageUrl, `${sentenceIndex}-original.png`);
 
-                    content.downloadedImages.push(imageUrl)
-                    console.log(`> [image-robot] [${sentenceIndex}] [${imageIndex}] Image successfully downloaded: ${imageUrl}`)
-                    break
+                    content.downloadedImages.push(imageUrl);
+                    console.log(`> [image-robot] [${sentenceIndex}] [${imageIndex}] Image successfully downloaded: ${imageUrl}`);
+                    break;
                 }
                 catch (error) {
-                    console.log(`> [image-robot] [${sentenceIndex}] [${imageIndex}] Error at download (${imageUrl}): ${error}`)
+                    console.log(`> [image-robot] [${sentenceIndex}] [${imageIndex}] Error at download (${imageUrl}): ${error}`);
                 }
             }
         }
@@ -81,8 +81,8 @@ async function robot() {
         return imageDownloader.image({
             url: url,
             dest: `./content/${fileName}`
-        })
+        });
     }
 }
 
-module.exports = robot
+module.exports = robot;
