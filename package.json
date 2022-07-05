@@ -23,7 +23,7 @@
     "express": "^4.17.1",
     "fluent-ffmpeg": "^2.1.2",
     "gm": "^1.23.1",
-    "googleapis": "^65.0.0",
+    "googleapis": "^105.0.0",
     "ibm-watson": "^5.7.1",
     "image-downloader": "^4.0.1",
     "readline-sync": "^1.4.10",
